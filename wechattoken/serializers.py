@@ -32,7 +32,7 @@ class AuthTokenSerializer(serializers.Serializer):
         result = response.json()
 
         if 'errcode' in result:
-            msg = _(result.errmsg)
+            msg = _(result['errmsg'])
             raise serializers.ValidationError(msg, code='authorization')
 
         return result
