@@ -1,12 +1,10 @@
-import hashlib
 from django.contrib.auth import get_user_model
 from rest_framework import parsers, renderers
-from rest_framework.views import APIView
-from rest_framework.generics import ListAPIView
 from rest_framework.response import Response
+from rest_framework.views import APIView
+
 from wechattoken.models import Token
 from wechattoken.serializers import AuthTokenSerializer
-
 
 User = get_user_model()
 
@@ -30,14 +28,14 @@ class ObtainAuthToken(APIView):
         openid = serializer.validated_data['openid']
         session_key = serializer.validated_data['session_key']
 
-        user = User.objects.get_or_create(
+        user, _ = User.objects.get_or_create(
             username=openid,
             defaults={'password': openid}
-        )[0]
-        token = Token.objects.update_or_create(
+        )
+        token, _ = Token.objects.update_or_create(
             user=user, openid=openid,
             defaults={'session_key': session_key, 'key': ''}
-        )[0]
+        )
 
         return Response({'token': token.key})
 
